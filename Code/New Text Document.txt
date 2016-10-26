@@ -1,0 +1,261 @@
+clear all
+% a=imread('C:\Users\Skywalker\Desktop\BE project\Database\pcb1.jpg');
+%a1=255-a;
+%a1=rgb2gray(a1);
+% img=input('enter the image to be checked')
+% b=imread(img);
+%b2=rgb2gray(b);
+
+a=imread('C:\Users\Skywalker\Desktop\BE project\Database\pcb1.jpg');
+a1=255-a;
+a1=rgb2gray(a1);
+img=input('enter the image to be checked')
+b=imread(img);
+
+%b2=imread('C:\Users\Skywalker\Desktop\BE project\Database\pcb1_openckt.jpg');
+b1=rgb2gray(b);
+b1=255-b1;
+[m n]=size(a1);
+
+[m n]=size(b1);
+b2=b1;
+a2=a1;
+for i=1:m
+     for j=1:n
+         if b2(i,j)>0
+             b2(i,j)=255;
+         else b2(i,j)=0;
+         end
+     end
+end
+ for i=1:m
+     for j=1:n
+         if a2(i,j)>0
+             a2(i,j)=255;
+         else a2(i,j)=0;
+         end
+     end
+ end
+ figure;
+ imshow(a2);
+ figure;
+ imshow(b2);
+ Defective_black=0;
+Defective_white=0;
+ for i=1:m
+      for j=1:n
+         if b2(i,j)==0
+         Defective_black=Defective_black+1;    
+         else 
+             Defective_white=Defective_white+1;
+         end
+     end
+ end
+Original_black=0;
+Original_white=0;
+ for i=1:m
+     for j=1:n
+         if a2(i,j)==0
+             Original_black=Original_black+1;
+         else 
+             Original_white=Original_white+1;
+         end
+     end
+ end
+disp('%Defective_white')
+disp(Defective_white)
+disp('Original_white')
+disp(Original_white)
+disp('Defective_black')
+disp(Defective_black)
+disp('Original_black')
+disp(Original_black)
+if (Defective_white<Original_white)&&(Defective_black>Original_black)
+disp('the defect is either with missing hole or short ckt');
+else
+ disp('the defect is either with Extra pin hole or open ckt');   
+end
+
+[m n]=size(b2);
+
+t=input('enter the threshold parameter:')
+inp=input('enter the type of error to be checked from PCB 1-open cuts , 2-missing holes ,3-pinholes , 4-short circuit');
+switch(inp)
+case 1 %open circuit
+for i=1:m
+     for j=1:n
+         if b1(i,j)<t
+             b1(i,j)=0;
+         else b1(i,j)=255;
+         end
+     end
+end
+ for i=1:m
+     for j=1:n
+         if a1(i,j)<t
+             a1(i,j)=0;
+         else a1(i,j)=255;
+         end
+      end
+end
+sub=a1-b1;
+rgbimg = repmat(sub,[1 1 3]);
+[m,n]=size(sub);
+asd=[];
+for i=1:m
+  for j=1:n
+    if(sub(i,j,:)>100)
+    rgbimg(i,j,:) = [192,0,0];
+    asd=[asd; i j];
+    end
+  end
+end
+subplot(3,1,1),imshow(a1),title('original image')
+subplot (3,1,2),imshow(b1),title('negative image')
+subplot (3,1,3),imshow(rgbimg),title('subtracted image')
+xlabel(sprintf('threshold value is %g',t))
+case 2 % missing pinhole
+    for i=1:m
+     for j=1:n
+         if b1(i,j)<t
+             b1(i,j)=0;
+         else b1(i,j)=255;
+         end
+     end
+ end
+%sub=b1;
+sub=b1-a1;
+d=sub-a1;
+rgbimg = repmat(d,[1 1 3]);
+[m,n]=size(d);
+asd=[];
+for i=1:m
+  for j=1:n
+    if(d(i,j,:)>100)
+    rgbimg(i,j,:) = [100,100,255];
+    asd=[asd; i j];
+    end
+  end
+end
+% asd1=[];
+% cnt=0;
+% for ii=1:length(asd)
+%     temp=asd(1,1);
+%     if(asd(ii,1)~=temp)
+%         asd1=asd;
+%         cnt=cnt+1;
+%     end
+% end
+%     if(cnt>1)
+%         disp('it is opencut');
+%     else
+%         disp('it is pinhole');
+%     end
+subplot(3,1,1),imshow(a1),title('original image')
+subplot (3,1,2),imshow(b1),title('negative image')
+subplot (3,1,3),imshow(rgbimg),title('defected PCB image with missing holes')
+xlabel(sprintf('threshold value is %g',t))
+ case 3 % pinholes
+        for i=1:m
+     for j=1:n
+         if b1(i,j)<t
+             b1(i,j)=0;
+         else b1(i,j)=255;
+         end
+     end
+end
+ for i=1:m
+     for j=1:n
+         if a1(i,j)<t
+             a1(i,j)=0;
+         else a1(i,j)=255;
+         end
+     end
+ end
+sub=a1-b1;
+rgbimg = repmat(sub,[1 1 3]);
+[m,n]=size(sub);
+asd=[];
+for i=1:m
+  for j=1:n
+    if(sub(i,j,:)>100)
+    rgbimg(i,j,:) = [0,185,0];
+    asd=[asd; i j];
+    end
+  end
+end
+asd1=[];asd2=[];
+cnt=0;cnt1=0;iii=1;
+for iii=1:10
+for ii=1+cnt1:length(asd)
+    jj=1;
+    %cnt1=0;
+    cnt=0;
+   % asd1=[];
+    temp=asd(jj+cnt1,1);
+    if(asd(ii,1)~=temp)
+        
+        
+        asd1=[asd1; ii ] ;
+        cnt=cnt+1;
+        
+    
+         %cnt1=cnt;
+         
+%         asd1=[];
+%         
+        %cnt=cnt+1;
+    end
+    cnt1
+    
+   
+    cnt=0; 
+end
+cnt1=cnt;
+asd2(iii)= length(asd1);
+asd1=[];
+end
+% asd2=[];
+% for i=1:length(asd)
+%     if (asd~=asd1)
+%         asd2=asd;
+%     end
+% end
+    if(cnt>1)
+        disp('it is opencut');
+    else
+        disp('it is pinhole');
+    end
+
+subplot(3,1,1),imshow(a1),title('original image')
+subplot (3,1,2),imshow(b1),title('negative image')
+subplot (3,1,3),imshow(rgbimg),title('subtracted image')
+xlabel(sprintf('threshold value is %g',t))
+case 4 %short ckt
+    for i=1:m
+     for j=1:n
+         if b1(i,j)<t
+             b1(i,j)=0;
+         else b1(i,j)=255;
+         end
+     end
+    end
+%sub=b1;
+sub=b1-a1;
+d=sub-a1;
+rgbimg = repmat(d,[1 1 3]);
+[m,n]=size(d);
+asd=[];
+for i=1:m
+  for j=1:n
+    if(d(i,j,:)>100)
+    rgbimg(i,j,:) = [200,200,200];
+    asd=[asd; i j];
+    end
+  end
+end
+end
+subplot(3,1,1),imshow(a1),title('original image')
+subplot (3,1,2),imshow(b1),title('negative image')
+subplot (3,1,3),imshow(rgbimg),title('defected PCB image with missing holes')
+xlabel(sprintf('threshold value is %g',t))    

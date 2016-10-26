@@ -1,0 +1,14 @@
+ORIGINAL PCB=pcb1.jpg
+
+DEFECTIVE PCB:->
+
+MISSING HOLE PCB =pcb1_missingpinhole.jpg
+
+
+OPEN CIRCUIT PCB=pcb1_openckt.jpg
+
+
+SHORT CIRCUIT PCB=pcb1_shortckt.jpg
+
+
+PINHOLE PCB=pcb1p.jpg
